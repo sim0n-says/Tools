@@ -19,13 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QPushButton, QTreeWidget, QTreeWidgetItem, QDialog, QCheckBox, QProgressBar, QHBoxLayout, QLineEdit
-from PyQt5.QtCore import Qt, QTimer
 import os
+import re
+from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QPushButton, QTreeWidget, QTreeWidgetItem, QDialog, QCheckBox, QProgressBar, QHBoxLayout, QLineEdit
+from PyQt5.QtCore import Qt
 from datetime import datetime
 from qgis.core import QgsProject, QgsVectorLayer, QgsWkbTypes
-import re
 
 class ShapefileLoader(QDialog):
     def __init__(self):
@@ -84,11 +83,14 @@ class ShapefileLoader(QDialog):
         self.file_list.clear()
         self.all_files.clear()
         show_geometry_type = self.show_geometry_type_checkbox.isChecked()
-        supported_extensions = [".shp", ".gpkg", ".geojson", ".kml", ".csv", ".xlsx", ".xls", "dbf"]
+        supported_extensions = [".shp", ".gpkg", ".geojson", ".kml", ".csv", ".xlsx", ".xls", ".gdb", ".dbf"]
         files_to_process = []
         for root, dirs, files in os.walk(directory):
             for file in files:
                 if any(file.endswith(ext) for ext in supported_extensions):
+                    file_path = os.path.join(root, file)
+                    if os.name == 'nt' and len(file_path) > 256:
+                        file_path = f"\\\\?\\{os.path.abspath(file_path)}"
                     files_to_process.append((root, file))
         
         total_files = len(files_to_process)
@@ -96,6 +98,8 @@ class ShapefileLoader(QDialog):
         
         for index, (root, file) in enumerate(files_to_process):
             file_path = os.path.join(root, file)
+            if os.name == 'nt' and len(file_path) > 256:
+                file_path = f"\\\\?\\{os.path.abspath(file_path)}"
             file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d')
             file_extension = os.path.splitext(file)[1]
             geometry_type = ""
