@@ -1,7 +1,8 @@
-# Ce script télécharge un fichier Excel avec des données d'espèces suivies du CDPNQ, extrait les noms scientifiques,
+# Ce script télécharge le fichier Excel des données d'espèces suivies part le CDPNQ, extrait les noms scientifiques,
 # interroge l'API GBIF pour obtenir les occurrences géolocalisées au Québec, et enregistre les résultats
-# dans des fichiers Excel et GeoPackage pour une analyse géospatiale ultérieureimport os
+# dans des fichiers Excel et GeoPackage pour une analyse géospatiale ultérieure.
 
+import os
 import pandas as pd
 import requests
 import time
