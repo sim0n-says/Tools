@@ -11,6 +11,13 @@ from shapely.geometry import Point
 import re
 from tqdm import tqdm
 
+# Définir les limites géographiques pour le Québec
+min_latitude = 45.0
+max_latitude = 62.0
+min_longitude = -79.5
+max_longitude = -57.0
+
+
 # URL du fichier Excel
 excel_url = 'https://cdn-contenu.quebec.ca/cdn-contenu/faune/documents/precaire/LI-especes-suivies_CDPNQ.xlsx'
 
@@ -37,10 +44,20 @@ try:
             match = re.search(r'\(([^)]+)\)', row.iloc[2])
             if match:
                 species_name = match.group(1)
+
+                # Extraire les deux premiers mots du nom scientifique
+                scientific_name_parts = species_name.split()
+                if len(scientific_name_parts) >= 2:
+                    search_name = f"{scientific_name_parts[0]} {scientific_name_parts[1]}"
+                else:
+                    search_name = species_name
+
                 params = {
-                    'scientificName': species_name,
-                    'stateProvince': 'Québec',  # Filtrer par la province du Québec
-                    'country': 'CA'  # Filtrer par le code pays du Canada
+                    'scientificName': search_name,
+                    'decimalLatitude': f"{min_latitude},{max_latitude}",
+                    'decimalLongitude': f"{min_longitude},{max_longitude}"
+                    #'stateProvince': 'Québec',  # Filtrer par la province du Québec
+                    #'country': 'CA'  # Filtrer par le code pays du Canada
                 }
                 
                 # Faire une requête à l'API GBIF
@@ -69,7 +86,7 @@ try:
                             results.append(result)
                 
                 # Pause d'une seconde entre chaque requête
-                time.sleep(1)
+                time.sleep(0.2)
 except KeyboardInterrupt:
     print("Interruption du script détectée. Enregistrement des données...")
 finally:
@@ -77,7 +94,7 @@ finally:
     results_df = pd.DataFrame(results)
 
     # Enregistrer les résultats dans un nouveau fichier Excel
-    results_df.to_excel('../coordonnees_especes.xlsx', index=False)
+    results_df.to_excel('Fetch/coordonnees_especes.xlsx', index=False)
 
     # Convertir les résultats en GeoDataFrame
     gdf = gpd.GeoDataFrame(
@@ -87,7 +104,7 @@ finally:
     )
 
     # Enregistrer les résultats dans un fichier GeoPackage
-    gdf.to_file('../coordonnees_especes.gpkg', layer='especes', driver='GPKG')
+    gdf.to_file('Fetch/coordonnees_especes.gpkg', layer='especes', driver='GPKG')
 
     print(f"Traitement terminé. {len(results)} occurrences trouvées.")
-    print("Les résultats ont été enregistrés dans '../coordonnees_especes.xlsx' et '../coordonnees_especes.gpkg'.")
+    print("Les résultats ont été enregistrés dans 'Fetch/coordonnees_especes.xlsx' et '../coordonnees_especes.gpkg'.")
