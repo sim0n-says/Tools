@@ -94,7 +94,7 @@ finally:
     results_df = pd.DataFrame(results)
 
     # Enregistrer les résultats dans un nouveau fichier Excel
-    results_df.to_excel('Fetch/coordonnees_especes.xlsx', index=False)
+    results_df.to_excel('../coordonnees_especes.xlsx', index=False)
 
     # Convertir les résultats en GeoDataFrame
     gdf = gpd.GeoDataFrame(
@@ -104,7 +104,7 @@ finally:
     )
 
     # Enregistrer les résultats dans un fichier GeoPackage
-    gdf.to_file('Fetch/coordonnees_especes.gpkg', layer='especes', driver='GPKG')
+    gdf.to_file('../coordonnees_especes.gpkg', layer='especes', driver='GPKG')
 
     print(f"Traitement terminé. {len(results)} occurrences trouvées.")
-    print("Les résultats ont été enregistrés dans 'Fetch/coordonnees_especes.xlsx' et '../coordonnees_especes.gpkg'.")
+    print("Les résultats ont été enregistrés dans '../coordonnees_especes.xlsx' et '../coordonnees_especes.gpkg'.")
