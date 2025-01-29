@@ -84,7 +84,7 @@ root = ET.Element("faune")
 # Utiliser une session pour les requêtes HTTP
 with requests.Session() as session:
     # Ajouter l'en-tête User-Agent personnalisé
-    session.headers.update({'User-Agent': 'SteakBléDindePatate/1.0 (Ce sondeur/collecteur est utilisé pour récupérer des données sur Québec.ca car le portail ne propose pas d''api acessible au public.)'})
+    session.headers.update({'User-Agent': 'SteakBléDindePatate/1.0 (Ce sondeur/collecteur est utilisé pour récupérer des données sur Québec.ca car le portail ne propose pas d''api accessible au public.)'})
     
     total_pages = get_total_pages(session)
     for page in range(1, total_pages + 1):
